@@ -2,7 +2,7 @@
 	"$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
 	"name": "silvertongue",
 	"version": "0.1.0",
-	"description": "Write like anyone famous: search studied writing voices and write your point in one, with every source linked.",
+	"description": "Write like anyone famous: find a studied voice and write your post, reply or thread in it, with every source linked.",
 	"author": {
 		"name": "auscaster",
 		"url": "https://github.com/auscaster"
@@ -16,7 +16,7 @@
 			"interface": {
 				"displayName": "Silvertongue",
 				"shortDescription": "Write like anyone famous",
-				"longDescription": "Search famous writing voices, each studied from what the person actually published, and write your own point in one for a post, reply, explanation or thread. Voices are unofficial: nobody named wrote or endorsed them, and drafts are never presented as their words.",
+				"longDescription": "Search famous writing voices, each studied from what the person actually published, and write your own post, reply, explanation or thread in one. Voices are unofficial: nobody named wrote or endorsed them, and drafts are never presented as their words.",
 				"developerName": "auscaster",
 				"category": "Productivity",
 				"capabilities": ["Search famous writing voices", "Read a voice's sources and limits", "Write in a voice for a format and platform"],
