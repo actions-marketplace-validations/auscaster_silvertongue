@@ -1,8 +1,9 @@
 name: review
 
 # Pull requests to this repository are reviewed by the released Action, installed as anyone installs it.
-# pull_request_target runs this workflow from the base branch, so a pull request from a fork gets a review
-# with the native reviewer restrictions intact. Do not add steps that execute fork code.
+# pull_request_target runs this workflow from the base branch with the repository's secrets, and GitHub does
+# not hold it for approval, so only pull requests from people with write access are reviewed: the review runs
+# on the owner's Claude subscription. Do not add steps that execute pull request code.
 on:
   pull_request_target:
     types: [opened, ready_for_review]
@@ -23,7 +24,9 @@ permissions:
 
 jobs:
   review:
-    if: github.actor != 'dependabot[bot]' && !github.event.pull_request.draft
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!github.event.pull_request.draft && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association))
     runs-on: ubuntu-latest
     steps:
       - uses: auscaster/silvertongue@v1
