@@ -1,9 +1,9 @@
-name: Silvertongue Celebrity PR Review
-description: Funny AI code review. Let Gordon Ramsay school your sloppy PRs, or Ricky Gervais roast them. 65+ celebrity voices and styles.
+name: "Silvertongue: Roast Your Sloppy PRs"
+description: AI code review in 65+ famous voices. From comedians, to Shakespeare, to Brainrot. Slop doesn't have to be boring.
 author: auscaster
 branding:
-  icon: feather
-  color: gray-dark
+  icon: mic
+  color: purple
 
 inputs:
   voice:

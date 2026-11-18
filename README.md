@@ -24,7 +24,13 @@ Pick a voice. Switch any time. Your message stays yours.
 
 ## Review pull requests
 
-**Let Gordon Ramsay or Marcus Aurelius school your sloppy PRs, or Tony Hinchcliffe or Ricky Gervais roast them.** Or hand them to Shakespeare, Brainrot, or any voice here. [Silvertongue Celebrity PR Review](action/README.md) is a GitHub Action for AI code review: Claude uses the official code-review workflow and OpenAI uses native Codex review; Gemini uses the existing custom audit. The original findings stay visible beneath the voice presentation. It runs on your Claude subscription with no API bill, or on an Anthropic, OpenAI or Gemini key.
+**Let Gordon Ramsay or Ricky Gervais roast your sloppy PRs, or Marcus Aurelius school them.** Or hand them to Sherlock Holmes, Shakespeare, Brainrot, or any of 65+ famous voices and styles.
+
+Bot reviews get skimmed. Gordon Ramsay's get read.
+
+[Silvertongue: Roast Your Sloppy PRs](action/README.md) is a GitHub Action for AI code review, and the review itself is real. Claude Code's own `/code-review` or Codex's native review reads the pull request on its exact commits, and only then does the voice get the findings. Gordon Ramsay can be as rude as he likes about your helper, but he can't invent a bug or drop one. Every comment sits on its line with the plain finding and the evidence folded underneath, and a review that fails or half-finishes never turns into an approval.
+
+It runs on your Claude Pro or Max plan, so there's no API bill. An Anthropic, OpenAI or Gemini API key works too.
 
 ```yaml
 - uses: auscaster/silvertongue@v1
@@ -33,13 +39,13 @@ Pick a voice. Switch any time. Your message stays yours.
     claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 ```
 
+> Hang on. Another runner? You had runCopilotFake sitting right there, and you've copied it line for line just so it takes a Config? That's baking a whole second cake because you wanted a different candle.
+>
+> **Gordon Ramsay**, on a test helper copied from the file next door
+
 > I went looking for something to be furious about and found manners. Disgusting.
 >
 > **Ricky Gervais**, approving a clean pull request
-
-> That's not cleanup, that's a mob hit where the second guy shoots a body already in the trunk.
->
-> **Tony Hinchcliffe**, on a temp folder deleted twice
 
 > That's not a new helper, mate. That's the old one in a hat.
 >

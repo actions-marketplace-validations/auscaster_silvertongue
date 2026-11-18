@@ -1,6 +1,8 @@
-# Silvertongue Celebrity PR Review
+# Silvertongue: Roast Your Sloppy PRs
 
-**Let Gordon Ramsay or Marcus Aurelius school your sloppy PRs, or Tony Hinchcliffe or Ricky Gervais roast them.** Or hand them to Sherlock Holmes, Shakespeare, Brainrot, or any of 65+ famous voices and styles.
+**Let Gordon Ramsay or Ricky Gervais roast your sloppy PRs, or Marcus Aurelius school them.** Or hand them to Sherlock Holmes, Shakespeare, Brainrot, or any of 65+ famous voices and styles.
+
+Bot reviews get skimmed. Gordon Ramsay's get read.
 
 It's a GitHub Action for AI code review. The review is hard, the delivery is funny, and the original findings and evidence stay visible underneath. It runs on your Claude Pro or Max plan, so there's no API bill.
 
@@ -15,7 +17,9 @@ It's a GitHub Action for AI code review. The review is hard, the delivery is fun
 
 ## What lands on your pull request
 
-These examples show the voice presentation, captured with the earlier custom audit. A real review of a real pull request: 372 lines of Go, written by an AI agent. Gordon Ramsay found a test helper copied from the file next door:
+An ordinary GitHub review: the verdict and the reviewer's opening at the top, and each finding on the line it's about. A pull request that should be rejected or reshaped comes back as "changes requested".
+
+This is Gordon Ramsay on a real pull request, 372 lines of Go written by an AI agent. He found a test helper copied from the file next door:
 
 > Hang on. Another runner? You had runCopilotFake sitting right there, and you've copied it line for line just so it takes a Config? That's baking a whole second cake because you wanted a different candle. Give the original a Config parameter, bin runCopilotFakeWithConfig, and share one argv reader across both test files.
 
@@ -29,7 +33,7 @@ Under every comment sits the plain version, folded away until someone needs it:
 
 </details>
 
-More lines from reviews of the same pull request, in other voices:
+More from reviews of the same pull request:
 
 > I went looking for something to be furious about and found manners. Disgusting.
 >
@@ -55,21 +59,25 @@ More lines from reviews of the same pull request, in other voices:
 >
 > **Ricky Gervais**, on a test helper copied to take one more parameter
 
+These ran on the Action's first engine, its own audit. Claude Code and Codex now do the analysis themselves, as below. The voices are the same.
+
 ## Why it reviews like this
 
 AI agents write pull requests faster than anyone can read them, and the bad ones look finished: a tidy description, green checks, a test file. Then you find the helper that already existed two folders over, the issue it says it closes and doesn't, and the test that still passes with the feature deleted. Whoever merges it pays for it for years.
 
-The analysis uses the review workflow for the provider you connect:
+So the joke never does the reviewing. The analysis is a real code review, run on the exact commits of the pull request by tooling built for the job, and the voice only gets the findings once it's finished. Gordon Ramsay can be as rude about your helper as he likes. He can't invent a bug, and he can't drop one.
 
-- **Claude, with a subscription or API key:** Claude Code's bundled `/code-review` workflow, invoked through its `/review` alias on the exact pinned Git revision range. The alias uses the built-in review even if a repository defines a skill called `code-review`. No extra plugin or rewritten review prompt is installed.
-- **OpenAI API key:** Codex's native `exec review`, against the pinned pull-request base and head with real Git history, in its read-only sandbox.
-- **Gemini API key:** the existing Silvertongue audit, with read/search tools and the architecture, duplication, boundary and test checks. This is a custom audit, not a native Claude or Codex review.
+- **Claude, on a subscription or an API key:** Claude Code's own `/code-review` workflow, called through its `/review` alias so a repository skill with the same name can't stand in for it. Claude Code is pinned to 2.1.323. It can read, search and run read-only Git commands; editing, writing and anything that posts to GitHub are denied, and it reports through its native `ReportFindings` tool.
+- **An OpenAI key:** Codex's native `exec review`, against the pinned base and head with real Git history, in its read-only sandbox with approvals off.
+- **A Gemini key:** Silvertongue's own audit, with read and search tools and checks for architecture, duplication, boundaries and tests. It's a custom audit, not a native review.
 
-The native review instructions stay intact. The chosen writing voice is supplied only after analysis. Original findings and evidence remain underneath the voiced comments; a remedy is included only when the reviewer supplies one, and a skipped, failed or incomplete review cannot become an approval. If the pull request changes during analysis, the run stops rather than posting a review assembled from different revisions.
+Three rules hold on every run:
 
-Claude's reviewer is invoked without `--comment` or `--fix`; direct commenting and write tools are denied. The Action owns the final GitHub review, including `post: false`. Claude reports through its native `ReportFindings` tool; Codex supplies its complete native report beneath the voiced opening; it returns a `comment` verdict, with no inferred approval or invented inline findings. Native review can use several model calls and the native reviewer's own agents. It is separate from the single-call compose service.
+- A review that's skipped, fails or doesn't finish never becomes an approval.
+- If someone pushes while it's reviewing, it stops and says so: "The pull request changed during review. Rerun against its new head and base; no review was posted." You never get a review stitched together from two revisions.
+- The reviewers' versions are pinned, and when a native review fails there's no quiet fallback to something weaker.
 
-API-key flows have been exercised end to end. Subscription authentication and presentation still await end-to-end qualification.
+A fix appears under a finding only when the reviewer wrote one. Codex's full native report is kept under its voiced opening, and its verdict is `comment`, because Codex doesn't give a machine verdict and the Action won't guess one.
 
 ## Set it up
 
@@ -101,9 +109,9 @@ jobs:
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 ```
 
-Open a pull request. A couple of minutes later the review arrives as an ordinary GitHub review, with the verdict and the opening at the top and each finding on its line. A pull request that should be rejected or reshaped comes back as "changes requested".
+Open a pull request. A couple of minutes later the review arrives as an ordinary GitHub review, with the verdict and the opening at the top and each finding on its line.
 
-No subscription? An API key works the same way: pass `anthropic-api-key`, `openai-api-key` or `gemini-api-key` instead, saved with `gh secret set`.
+No subscription? An API key works the same way: pass `anthropic-api-key`, `openai-api-key` or `gemini-api-key` instead, saved with `gh secret set`. A subscription token wins when both are given.
 
 ## Pick your reviewer
 
@@ -149,14 +157,14 @@ Outputs: `verdict` (`reject`, `reshape`, `accept`, or `comment` for a native rep
 
 ## Where your code goes
 
-The Action runs on GitHub's runner. It fetches the pinned head and base with their ancestry and does not install or build the pull request. Claude runs in restricted mode with read tools and explicitly permitted read-only Git commands. Codex runs its native review in a read-only sandbox with approvals disabled. Neither native reviewer receives a GitHub publishing token. Native reviewers are instructed not to execute repository code; these are review tools, not a sandbox for testing untrusted changes.
+To the model provider you connected, and nowhere else. Silvertongue's server is asked for one thing: the writing instructions for the voice you picked, by its name.
 
-The code goes to the model provider you connected. Silvertongue's server is asked only for the writing instructions for the voice, by its name. Native CLI versions are pinned; there is no automatic fallback to a homemade audit if a native review fails. The runner needs Node, npm and Git; the documented Ubuntu GitHub-hosted runner provides these.
+The Action runs on GitHub's runner. It fetches the pinned head and base with their history, and never installs or builds the pull request. Neither reviewer gets a token that can post to GitHub; the Action posts the final review itself, with your workflow's token. The reviewers are told not to run repository code, but they're review tools, not a sandbox for testing untrusted changes.
 
 ## What it costs
 
-On a Claude plan, a review counts against the plan like any other Claude Code session. API keys are billed by their provider. The native review's usage differs from the previous custom audit and depends on the pull request. The job logs reported token usage and explicitly marks totals incomplete when a native reviewer does not report its tokens; there is no fixed per-review price claim.
+On a Claude plan, a review counts against the plan like any other Claude Code session. An API key is billed by its provider. What a review uses depends on the pull request, and the job log prints the tokens it used.
 
 ## Pull requests from forks
 
-GitHub gives a `pull_request` run from a fork no secrets and a read-only token. To review those too, run on `pull_request_target` instead. It runs the workflow from your base branch. Keep the workflow and Action reference trusted, do not add a checkout-and-run step for fork code, and retain the native reviewer permission restrictions. This repository reviews its own pull requests that way: [.github/workflows/review.yml](../.github/workflows/review.yml).
+GitHub gives a `pull_request` run from a fork no secrets and a read-only token. To review those too, run on `pull_request_target`, which runs the workflow from your base branch. Keep the workflow and the Action reference trusted, never add a step that checks out and runs the fork's code, and leave the reviewers' restrictions as they are. On a Claude plan every review counts against your plan, and `pull_request_target` doesn't wait for your approval, so limit it to authors you trust. This repository reviews pull requests from people with write access that way: [.github/workflows/review.yml](../.github/workflows/review.yml).
