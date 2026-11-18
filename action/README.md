@@ -113,6 +113,8 @@ Open a pull request. A couple of minutes later the review arrives as an ordinary
 
 No subscription? An API key works the same way: pass `anthropic-api-key`, `openai-api-key` or `gemini-api-key` instead, saved with `gh secret set`. A subscription token wins when both are given.
 
+Already have a reviewer you like? Keep it, and [pipe what it says through a voice](../voice/README.md) instead.
+
 ## Pick your reviewer
 
 Set `voice` to any of these. Each kind of voice is funny in its own way.

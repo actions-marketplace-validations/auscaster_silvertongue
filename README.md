@@ -53,6 +53,8 @@ It runs on your Claude Pro or Max plan, so there's no API bill. An Anthropic, Op
 
 [Set it up](action/README.md#set-it-up) · [Pick your reviewer](action/README.md#pick-your-reviewer) · [See a real review](action/README.md#what-lands-on-your-pull-request)
 
+Already have a reviewer, or a bot that talks? [Pipe what it says through a voice](voice/README.md) with `uses: auscaster/silvertongue/voice@v1`.
+
 ## How it works
 
 1. **Pick a voice.** Every voice in the catalogue is a researched study of how a famous person writes: how they open, argue, land a line, and what they never say.
@@ -172,6 +174,7 @@ Featured voices. All 50 public profiles are listed in [`profiles/`](profiles/REA
 | **Any MCP client** | `https://mcp.silvertongue.dev/mcp`, with voice switching mid-thread | Now |
 | **Your browser** | [Get the browser extensions](https://silvertongue.dev/#get) and rewrite in the text box where you work | Now |
 | **Pull requests** | The GitHub Action, `uses: auscaster/silvertongue@v1`: [set it up](action/README.md) | Now |
+| **Any workflow** | Pipe any text through a voice, `uses: auscaster/silvertongue/voice@v1`: [set it up](voice/README.md) | Now |
 
 Start now with any voice:
 

@@ -17,6 +17,7 @@
 	},
 	"include": [
 		"action/**/*.ts",
+		"voice/**/*.ts",
 		"spec/**/*.ts",
 		"test/**/*.ts",
 		"scripts/**/*.ts"

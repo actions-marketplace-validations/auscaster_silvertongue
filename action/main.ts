@@ -3,36 +3,9 @@
 import { appendFileSync, readFileSync } from "node:fs";
 import { audit as runAudit } from "./audit.ts";
 import { GitHub } from "./github.ts";
-import { DEFAULT_MODEL, model as makeModel, providerOf, type Provider } from "./models.ts";
+import { chooseModel, flag, input, output, voiceSettings } from "./inputs.ts";
 import { compose, flatten, markdown } from "./review.ts";
 import { humourOf, packet, write } from "./voice.ts";
-
-const input = (name: string) => (process.env[`INPUT_${name.toUpperCase()}`] ?? "").trim();
-
-function flag(name: string, fallback: boolean): boolean {
-	const v = input(name).toLowerCase();
-	if (v === "") return fallback;
-	if (v === "true" || v === "false") return v === "true";
-	throw new Error(`${name} must be true or false, not "${v}".`);
-}
-
-function output(name: string, value: string) {
-	if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
-}
-
-// A Claude subscription comes first when it is given: it means no API bill.
-const KEYS: [Provider, string][] = [["claude-code", "claude-code-oauth-token"], ["anthropic", "anthropic-api-key"], ["openai", "openai-api-key"], ["gemini", "gemini-api-key"]];
-
-function chooseModel() {
-	const keys = Object.fromEntries(KEYS.map(([p, name]) => [p, input(name)])) as Record<Provider, string>;
-	const named = input("model");
-	let provider = named ? providerOf(named) : KEYS.map(([p]) => p).find((p) => keys[p]);
-	if (named && !provider) throw new Error(`model "${named}" is not a Claude, OpenAI or Gemini model id.`);
-	if (provider === "anthropic" && keys["claude-code"]) provider = "claude-code";
-	if (!provider) throw new Error("Connect a model: claude-code-oauth-token (a Claude subscription, from claude setup-token), or anthropic-api-key, openai-api-key or gemini-api-key.");
-	if (!keys[provider]) throw new Error(`model "${named}" needs ${KEYS.find(([p]) => p === provider)![1]}.`);
-	return makeModel(provider, named || DEFAULT_MODEL[provider], keys[provider]);
-}
 
 function pullNumber(): number {
 	const given = input("pull-request");
@@ -47,11 +20,7 @@ function pullNumber(): number {
 }
 
 async function main() {
-	const voice = input("voice") || "marcus-aurelius";
-	const edge = (input("edge") || "full") as "full" | "clean";
-	if (edge !== "full" && edge !== "clean") throw new Error(`edge must be full or clean, not "${edge}".`);
-	const asked = input("humour");
-	humourOf(undefined, asked);
+	const { voice, edge, humour: asked } = voiceSettings();
 	const post = flag("post", true);
 	const requestChanges = flag("request-changes", true);
 	const [owner, name] = (process.env.GITHUB_REPOSITORY ?? "").split("/");
